@@ -1,0 +1,43 @@
+image:
+  repository: ghcr.io/metal-stack/gardener-extension-backup-s3
+  tag: latest
+  pullPolicy: Always
+
+replicaCount: 1
+maxUnavailable: 1
+maxSurge: 50%
+
+resources: {}
+
+metricsPort: 8080
+healthPort: 8081
+
+controllers:
+  backupbucket:
+    concurrentSyncs: 5
+  backupentry:
+    concurrentSyncs: 5
+  heartbeat:
+    renewIntervalSeconds: 30
+  ignoreOperationAnnotation: false
+
+disableControllers: []
+disableWebhooks: []
+ignoreResources: false
+
+## settings for metrics, e.g. scraping by seed-prometheus
+##
+metrics:
+  ## enable metrics scraping
+  ##
+  enableScraping: true
+
+config:
+  clientConnection:
+    acceptContentTypes: application/json
+    contentType: application/json
+    qps: 100
+    burst: 130
+
+gardener:
+  version: ""

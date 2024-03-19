@@ -1,0 +1,4 @@
+// SPDX-FileCopyrightText: SAP SE or an SAP affiliate company and Gardener contributors
+// SPDX-FileCopyrightText: metal-stack Authors
+//
+// SPDX-License-Identifier: Apache-2.0
