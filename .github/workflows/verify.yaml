@@ -1,5 +1,5 @@
 ---
-name: Test Action
+name: Verify Action
 on:
   pull_request:
     branches:
@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    name: Test Build
+    name: Verify Build
     runs-on: ubuntu-latest
 
     steps:
@@ -27,4 +27,5 @@ jobs:
 
     - name: Verify
       run: |
+        make revendor
         make verify
