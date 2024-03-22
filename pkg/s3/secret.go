@@ -18,7 +18,7 @@ import (
 	s3client "github.com/metal-stack/gardener-extension-backup-s3/pkg/s3/client"
 )
 
-// NewClientFromSecretRef creates a new Client for the given AWS credentials from given k8s <secretRef>
+// NewClientFromSecretRef creates a new Client for the given S3 credentials from given k8s <secretRef>
 func NewClientFromSecretRef(ctx context.Context, client client.Client, secretRef corev1.SecretReference) (*s3client.Client, error) {
 	credentials, err := getCredentialsFromSecretRef(ctx, client, secretRef)
 	if err != nil {

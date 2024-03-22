@@ -12,7 +12,7 @@ import (
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// ControllerConfiguration defines the configuration for the AWS provider.
+// ControllerConfiguration defines the configuration for the S3 backup provider.
 type ControllerConfiguration struct {
 	metav1.TypeMeta
 
