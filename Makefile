@@ -82,7 +82,7 @@ generate: $(HELM) $(YQ)
 
 .PHONY: generate-in-container
 generate-in-container: revendor $(HELM)
-#	echo $(shell git describe --abbrev=0 --tags) > VERSION
+	echo $(shell git describe --abbrev=0 --tags) > VERSION
 	docker run --rm -i$(DOCKER_TTY_ARG) \
 		--env GOCACHE=/gocache \
 		--mount type=tmpfs,destination=/gocache,tmpfs-mode=1777 \
