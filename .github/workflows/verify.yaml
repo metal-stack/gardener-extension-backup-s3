@@ -27,5 +27,5 @@ jobs:
 
     - name: Verify
       run: |
-        make revendor
+        make tidy
         make verify
