@@ -39,7 +39,7 @@ build:
 	go build -ldflags $(LD_FLAGS) -tags netgo ./cmd/gardener-extension-backup-s3
 
 .PHONY: install
-install: revendor $(HELM)
+install: tidy $(HELM)
 	@LD_FLAGS="-w -X github.com/gardener/$(EXTENSION_PREFIX)-$(NAME)/pkg/version.Version=$(VERSION)" \
 	bash $(GARDENER_HACK_DIR)/install.sh ./...
 
