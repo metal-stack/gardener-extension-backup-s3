@@ -1,6 +1,6 @@
 .idea/
 .vscode
 
-hack/tools/bin/
+hack/tools/bin
 vendor
 VERSION
