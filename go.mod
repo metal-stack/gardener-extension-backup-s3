@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/aws/aws-sdk-go v1.51.2
-	github.com/gardener/gardener v1.85.5
+	github.com/gardener/gardener v1.86.4
 	github.com/go-logr/logr v1.4.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
