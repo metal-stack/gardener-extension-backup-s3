@@ -19,5 +19,5 @@ spec:
   ports:
   - name: metrics
     port: {{ .Values.metricsPort }}
-    targetPort: {{ .Values.metricsPort }}
     protocol: TCP
+    targetPort: {{ .Values.metricsPort }}
