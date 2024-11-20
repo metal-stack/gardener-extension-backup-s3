@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ENSURE_GARDENER_MOD         := $(shell go get github.com/gardener/gardener@$$(go list -m -f "{{.Version}}" github.com/gardener/gardener))
-GARDENER_HACK_DIR    		:= $(shell go list -m -f "{{.Dir}}" github.com/gardener/gardener)/hack
+GARDENER_HACK_DIR           := $(shell go list -m -f "{{.Dir}}" github.com/gardener/gardener)/hack
 IMAGE_TAG                   := $(or ${GITHUB_TAG_NAME}, latest)
 REGISTRY                    := ghcr.io/metal-stack
 IMAGE_PREFIX                := $(REGISTRY)
@@ -15,8 +15,8 @@ LD_FLAGS                    := "-w -X github.com/metal-stack/gardener-extension-
 LEADER_ELECTION             := false
 IGNORE_OPERATION_ANNOTATION := false
 WEBHOOK_CONFIG_URL          := localhost
-GO_VERSION                  := 1.22
-GOLANGCI_LINT_VERSION       := v1.56.2
+GO_VERSION                  := 1.23
+GOLANGCI_LINT_VERSION       := v1.62.0
 
 ifeq ($(CI),true)
   DOCKER_TTY_ARG=""
