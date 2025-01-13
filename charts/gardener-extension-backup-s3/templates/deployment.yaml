@@ -82,16 +82,6 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /etc/{{ include "name" . }}/config
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: {{ include "labels.app.key" . }}
-                    operator: In
-                    values:
-                      - {{ include "labels.app.value" . }}
-              topologyKey: "kubernetes.io/hostname"
       volumes:
       - name: config
         configMap:
