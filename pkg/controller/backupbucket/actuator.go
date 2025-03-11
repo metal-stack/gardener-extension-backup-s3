@@ -30,13 +30,20 @@ func newActuator(mgr manager.Manager) backupbucket.Actuator {
 	}
 }
 
-func (a *actuator) Reconcile(ctx context.Context, _ logr.Logger, backupBucket *extensionsv1alpha1.BackupBucket) error {
+func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, backupBucket *extensionsv1alpha1.BackupBucket) error {
 	s3Client, err := s3.NewClientFromSecretRef(ctx, a.client, backupBucket.Spec.SecretRef)
 	if err != nil {
+		log.Error(err, "unable to create S3 client")
 		return util.DetermineError(err, helper.KnownCodes)
 	}
 
-	return util.DetermineError(s3Client.CreateBucketIfNotExists(ctx, backupBucket.Name, backupBucket.Spec.Region), helper.KnownCodes)
+	err = s3Client.CreateBucketIfNotExists(ctx, backupBucket.Name, backupBucket.Spec.Region)
+	if err != nil {
+		log.Error(err, "Failed to CreateBucketIfNotExists", "bucket", backupBucket.Name)
+		return util.DetermineError(err, helper.KnownCodes)
+	}
+
+	return nil
 }
 
 func (a *actuator) Delete(ctx context.Context, _ logr.Logger, backupBucket *extensionsv1alpha1.BackupBucket) error {
