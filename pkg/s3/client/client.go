@@ -104,6 +104,22 @@ func (c *Client) DeleteObjectsWithPrefix(ctx context.Context, bucket, prefix str
 // CreateBucketIfNotExists creates the s3 bucket with name <bucket> in <region>. If it already exists,
 // no error is returned.
 func (c *Client) CreateBucketIfNotExists(ctx context.Context, bucket, region string) error {
+	input := &s3.HeadBucketInput{
+		Bucket: aws.String(bucket),
+	}
+
+	if _, err := c.s3.HeadBucket(input); err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			if aerr.Code() == s3.ErrCodeNoSuchBucket {
+				return c.CreateBucketIfNotExists2(ctx, bucket, region)
+			}
+		}
+		return err
+	}
+	return nil
+}
+
+func (c *Client) CreateBucketIfNotExists2(ctx context.Context, bucket, region string) error {
 	createBucketInput := &s3.CreateBucketInput{
 		Bucket: aws.String(bucket),
 		ACL:    aws.String(s3.BucketCannedACLPrivate),
