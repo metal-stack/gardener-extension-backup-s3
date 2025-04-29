@@ -1,0 +1,42 @@
+---
+name: Helm Chart Release Action
+on:
+  pull_request:
+    branches:
+        - main
+  release:
+    types:
+        - published
+  push:
+    branches:
+        - main
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+
+        - name: Make tag
+          run: |
+            [ "${GITHUB_EVENT_NAME}" == 'pull_request' ] && echo "tag=v0.0.0-pull-request.${{ github.event.number }}" >> $GITHUB_ENV || true
+            [ "${GITHUB_EVENT_NAME}" == 'release' ] && echo "tag=${GITHUB_REF##*/}" >> $GITHUB_ENV || true
+            [ "${GITHUB_EVENT_NAME}" == 'push' ] && echo "tag=v0.0.0" >> $GITHUB_ENV || true
+
+        - name: Release Helm OCI Artifact
+          uses: appany/helm-oci-chart-releaser@v0.4.2
+          with:
+            name: gardener-extension-backup-s3
+            repository: ${{ github.repository_owner }}/charts
+            tag: ${{ env.tag }}
+            path: charts/gardener-extension-backup-s3
+            registry: ${{ env.REGISTRY }}
+            registry_username: ${{ secrets.DOCKER_REGISTRY_USER }}
+            registry_password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
