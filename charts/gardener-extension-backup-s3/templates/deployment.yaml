@@ -38,7 +38,7 @@ spec:
         networking.resources.gardener.cloud/to-all-shoots-kube-apiserver-tcp-443: allowed
 {{ include "labels" . | indent 8 }}
     spec:
-      {{- if .Values.gardener.runtimeCluster.enabled }}
+      {{- if (include "runtimeCluster.enabled" .) }}
       priorityClassName: {{ .Values.gardener.runtimeCluster.priorityClassName }}
       {{- else }}
       priorityClassName: gardener-system-900
