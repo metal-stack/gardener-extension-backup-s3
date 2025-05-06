@@ -41,3 +41,10 @@ config:
 
 gardener:
   version: ""
+  gardenlet:
+    featureGates: {}
+# seed:
+#   provider:
+# runtimeCluster:
+#   enabled: false
+#   priorityClassName: gardener-garden-system-200
