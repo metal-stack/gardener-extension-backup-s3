@@ -7,7 +7,7 @@ package v1alpha1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	componentbaseconfigv1alpha1 "k8s.io/component-base/config/v1alpha1"
+	configv1alpha1 "k8s.io/component-base/config/v1alpha1"
 )
 
 // +genclient
@@ -20,5 +20,5 @@ type ControllerConfiguration struct {
 	// ClientConnection specifies the kubeconfig file and client connection
 	// settings for the proxy server to use when communicating with the apiserver.
 	// +optional
-	ClientConnection *componentbaseconfigv1alpha1.ClientConnectionConfiguration `json:"clientConnection,omitempty"`
+	ClientConnection *configv1alpha1.ClientConnectionConfiguration `json:"clientConnection,omitempty"`
 }
