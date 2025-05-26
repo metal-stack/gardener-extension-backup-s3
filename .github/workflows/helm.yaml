@@ -39,15 +39,15 @@ jobs:
         - name: Patch container image tags in values.yaml
           uses: mikefarah/yq@v4
           with:
-            cmd: yq e -i '.image.tag="${{ steps.meta.outputs.version }}"' charts/gardener-extension-backup-s3/values.yaml
+            cmd: yq e -i '.image.tag="${{ steps.meta.outputs.version }}"' charts/${{ github.event.repository.name }}/values.yaml
 
         - name: Release Helm OCI Artifact
           uses: appany/helm-oci-chart-releaser@v0.4.2
           with:
-            name: gardener-extension-backup-s3
+            name: ${{ github.event.repository.name }}
             repository: ${{ github.repository_owner }}/charts
             tag: ${{ env.tag }}
-            path: charts/gardener-extension-backup-s3
+            path: charts/${{ github.event.repository.name }}
             registry: ${{ env.REGISTRY }}
             registry_username: ${{ secrets.DOCKER_REGISTRY_USER }}
             registry_password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
