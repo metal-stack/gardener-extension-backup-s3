@@ -23,7 +23,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configmap-{{ include "fullname" . }}-config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/configmap-{{ include "name" . }}-config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         {{- if and .Values.metrics.enableScraping }}
         prometheus.io/name: "{{ .Release.Name }}"
         prometheus.io/scrape: "true"
