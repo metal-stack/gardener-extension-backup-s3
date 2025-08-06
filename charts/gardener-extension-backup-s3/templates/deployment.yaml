@@ -94,8 +94,8 @@ spec:
             drop: [ "ALL" ]
           readOnlyRootFilesystem: true
           runAsNonRoot: true
-          runAsUser: 1337
-          runAsGroup: 1337
+          runAsUser: 65532
+          runAsGroup: 65532
         volumeMounts:
         - name: config
           mountPath: /etc/{{ include "name" . }}/config
