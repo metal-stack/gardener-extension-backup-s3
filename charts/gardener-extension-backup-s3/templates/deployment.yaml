@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "name" . }}
+  name: {{ include "fullname" . }}
   namespace: {{ .Release.Namespace }}
 {{-  if .Values.ignoreResources }}
   annotations:
     resources.gardener.cloud/ignore: "true"
 {{- end }}
   labels:
-{{ include "labels" . | indent 4 }}
+    {{- include "labels" . | nindent 4 }}
   high-availability-config.resources.gardener.cloud/type: server
 spec:
   revisionHistoryLimit: 0
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-{{ include "labels" . | indent 6 }}
+      {{- include "selectorLabels" . | nindent 6 }}
   strategy:
     rollingUpdate:
       maxUnavailable: {{ .Values.maxUnavailable }}
@@ -36,14 +36,14 @@ spec:
         networking.gardener.cloud/to-public-networks: allowed
         networking.gardener.cloud/to-private-networks: allowed
         networking.resources.gardener.cloud/to-all-shoots-kube-apiserver-tcp-443: allowed
-{{ include "labels" . | indent 8 }}
+        {{- include "selectorLabels" . | nindent 8 }}
     spec:
       {{- if (include "runtimeCluster.enabled" .) }}
       priorityClassName: {{ .Values.gardener.runtimeCluster.priorityClassName }}
       {{- else }}
       priorityClassName: gardener-system-900
       {{- end }}
-      serviceAccountName: {{ include "name" . }}
+      serviceAccountName: {{ include "fullname" . }}
       containers:
       - name: {{ include "name" . }}
         image: {{ include "image" . }}
@@ -105,5 +105,5 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ include "name" . }}-configmap
+          name: {{ include "fullname" . }}-configmap
           defaultMode: 420

@@ -1,3 +1,6 @@
+nameOverride: ""
+fullnameOverride: ""
+
 image:
   repository: ghcr.io/metal-stack/gardener-extension-backup-s3
   tag: latest
