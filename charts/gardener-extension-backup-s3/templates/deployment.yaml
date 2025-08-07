@@ -88,9 +88,20 @@ spec:
         resources:
 {{ toYaml .Values.resources | nindent 10 }}
 {{- end }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ "ALL" ]
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
         - name: config
           mountPath: /etc/{{ include "name" . }}/config
+          readOnly: true
       volumes:
       - name: config
         configMap:
