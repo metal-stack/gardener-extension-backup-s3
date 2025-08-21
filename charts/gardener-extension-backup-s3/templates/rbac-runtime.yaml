@@ -75,6 +75,6 @@ roleRef:
   name: {{ include "name" . }}-runtime
 subjects:
 - kind: ServiceAccount
-  name: {{ include "name" . }}
+  name: {{ include "name" . }}-runtime
   namespace: {{ .Release.Namespace }}
 {{- end }}
