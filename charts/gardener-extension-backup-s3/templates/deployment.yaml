@@ -40,10 +40,11 @@ spec:
     spec:
       {{- if (include "runtimeCluster.enabled" .) }}
       priorityClassName: {{ .Values.gardener.runtimeCluster.priorityClassName }}
+      serviceAccountName: {{ include "name" . }}-runtime
       {{- else }}
       priorityClassName: gardener-system-900
-      {{- end }}
       serviceAccountName: {{ include "fullname" . }}
+      {{- end }}
       containers:
       - name: {{ include "name" . }}
         image: {{ include "image" . }}
