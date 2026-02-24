@@ -11,13 +11,13 @@ import (
 	"crypto/x509"
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/davecgh/go-spew/spew"
 )
 
 // NewClient returns a new S3 client from the given credentials.
@@ -111,7 +111,16 @@ func (c *Client) CreateBucketIfNotExists(ctx context.Context, bucket, region str
 		return fmt.Errorf("unable to list backup buckets: %w", err)
 	}
 
-	spew.Dump(buckets.Buckets)
+	if slices.ContainsFunc(buckets.Buckets, func(b *s3.Bucket) bool {
+		if b.Name == nil {
+			return false
+		}
+
+		return *b.Name == bucket
+	}) {
+		// for ontap s3 storage the backend returns InternalError for already existing buckets?
+		return nil
+	}
 
 	createBucketInput := &s3.CreateBucketInput{
 		Bucket: aws.String(bucket),
@@ -125,7 +134,6 @@ func (c *Client) CreateBucketIfNotExists(ctx context.Context, bucket, region str
 		if aerr, ok := err.(awserr.Error); !ok {
 			return fmt.Errorf("no awserr returned: %w", err)
 		} else if aerr.Code() != s3.ErrCodeBucketAlreadyExists && aerr.Code() != s3.ErrCodeBucketAlreadyOwnedByYou {
-			fmt.Printf("====\nreturn code %s\n", aerr.Code())
 			return err
 		}
 	}
