@@ -9,6 +9,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"net/http"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -16,6 +17,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // NewClient returns a new S3 client from the given credentials.
@@ -104,6 +106,13 @@ func (c *Client) DeleteObjectsWithPrefix(ctx context.Context, bucket, prefix str
 // CreateBucketIfNotExists creates the s3 bucket with name <bucket> in <region>. If it already exists,
 // no error is returned.
 func (c *Client) CreateBucketIfNotExists(ctx context.Context, bucket, region string) error {
+	buckets, err := c.s3.ListBuckets(&s3.ListBucketsInput{})
+	if err != nil {
+		return fmt.Errorf("unable to list backup buckets: %w", err)
+	}
+
+	spew.Dump(buckets.Buckets)
+
 	createBucketInput := &s3.CreateBucketInput{
 		Bucket: aws.String(bucket),
 		ACL:    aws.String(s3.BucketCannedACLPrivate),
@@ -114,7 +123,7 @@ func (c *Client) CreateBucketIfNotExists(ctx context.Context, bucket, region str
 
 	if _, err := c.s3.CreateBucketWithContext(ctx, createBucketInput); err != nil {
 		if aerr, ok := err.(awserr.Error); !ok {
-			return err
+			return fmt.Errorf("no awserr returned: %w", err)
 		} else if aerr.Code() != s3.ErrCodeBucketAlreadyExists && aerr.Code() != s3.ErrCodeBucketAlreadyOwnedByYou {
 			return err
 		}
