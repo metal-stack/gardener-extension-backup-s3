@@ -125,6 +125,7 @@ func (c *Client) CreateBucketIfNotExists(ctx context.Context, bucket, region str
 		if aerr, ok := err.(awserr.Error); !ok {
 			return fmt.Errorf("no awserr returned: %w", err)
 		} else if aerr.Code() != s3.ErrCodeBucketAlreadyExists && aerr.Code() != s3.ErrCodeBucketAlreadyOwnedByYou {
+			spew.Dump(aerr)
 			return err
 		}
 	}
