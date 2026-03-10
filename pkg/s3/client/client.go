@@ -106,6 +106,8 @@ func (c *Client) DeleteObjectsWithPrefix(ctx context.Context, bucket, prefix str
 // CreateBucketIfNotExists creates the s3 bucket with name <bucket> in <region>. If it already exists,
 // no error is returned.
 func (c *Client) CreateBucketIfNotExists(ctx context.Context, bucket, region string) error {
+	// some s3 storage implementations do not properly return the already exists or already owned by you
+	// error codes. therefore, we check if the bucket already exists in the backend by listing them first.
 	buckets, err := c.s3.ListBuckets(&s3.ListBucketsInput{})
 	if err != nil {
 		return fmt.Errorf("unable to list backup buckets: %w", err)
@@ -118,7 +120,6 @@ func (c *Client) CreateBucketIfNotExists(ctx context.Context, bucket, region str
 
 		return *b.Name == bucket
 	}) {
-		// for ontap s3 storage the backend returns InternalError for already existing buckets?
 		return nil
 	}
 
