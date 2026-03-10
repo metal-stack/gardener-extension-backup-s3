@@ -9,7 +9,9 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -104,6 +106,23 @@ func (c *Client) DeleteObjectsWithPrefix(ctx context.Context, bucket, prefix str
 // CreateBucketIfNotExists creates the s3 bucket with name <bucket> in <region>. If it already exists,
 // no error is returned.
 func (c *Client) CreateBucketIfNotExists(ctx context.Context, bucket, region string) error {
+	// some s3 storage implementations do not properly return the already exists or already owned by you
+	// error codes. therefore, we check if the bucket already exists in the backend by listing them first.
+	buckets, err := c.s3.ListBuckets(&s3.ListBucketsInput{})
+	if err != nil {
+		return fmt.Errorf("unable to list backup buckets: %w", err)
+	}
+
+	if slices.ContainsFunc(buckets.Buckets, func(b *s3.Bucket) bool {
+		if b.Name == nil {
+			return false
+		}
+
+		return *b.Name == bucket
+	}) {
+		return nil
+	}
+
 	createBucketInput := &s3.CreateBucketInput{
 		Bucket: aws.String(bucket),
 		ACL:    aws.String(s3.BucketCannedACLPrivate),
@@ -114,7 +133,7 @@ func (c *Client) CreateBucketIfNotExists(ctx context.Context, bucket, region str
 
 	if _, err := c.s3.CreateBucketWithContext(ctx, createBucketInput); err != nil {
 		if aerr, ok := err.(awserr.Error); !ok {
-			return err
+			return fmt.Errorf("no awserr returned: %w", err)
 		} else if aerr.Code() != s3.ErrCodeBucketAlreadyExists && aerr.Code() != s3.ErrCodeBucketAlreadyOwnedByYou {
 			return err
 		}
