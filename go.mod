@@ -1,6 +1,6 @@
 module github.com/metal-stack/gardener-extension-backup-s3
 
-go 1.24.5
+go 1.26
 
 require (
 	github.com/aws/aws-sdk-go v1.55.5
