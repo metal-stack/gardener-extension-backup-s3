@@ -55,7 +55,7 @@ gardener:
 # this allows the connection to an s3 service running namespace in the cluster (namespaced not governed by the Gardener)
 networkPolicies:
   enabled: false
-  s3:
-    namespace: minio-tenant
+  ingressController:
+    namespace: envoy-gateway-system
     podSelector:
-      v1.min.io/tenant: metal-stack
+      app.kubernetes.io/name: envoy
