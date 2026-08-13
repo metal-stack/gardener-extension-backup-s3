@@ -38,7 +38,7 @@ spec:
           kubernetes.io/metadata.name: {{ .Values.networkPolicies.ingressController.namespace }}
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "name" . }}
+      app.kubernetes.io/name: virtual-garden-etcd-main
   policyTypes:
   - Egress
 {{- end }}
