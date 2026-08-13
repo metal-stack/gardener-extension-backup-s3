@@ -1,0 +1,27 @@
+{{- if .Values.networkPolicies.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-to-s3
+  namespace: {{ .Release.Namespace }}
+spec:
+  egress:
+  - ports:
+    - port: 80
+      protocol: TCP
+    - port: 443
+      protocol: TCP
+    to:
+    - podSelector:
+        matchLabels:
+          {{- .Values.networkPolicies.s3.podSelector | toYaml | nindent 10 }}
+      namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: {{ .Values.networkPolicies.s3.namespace }}
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "name" . }}
+  policyTypes:
+  - Egress
+{{- end }}

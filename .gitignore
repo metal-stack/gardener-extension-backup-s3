@@ -5,4 +5,4 @@
 hack/tools/bin
 vendor
 VERSION
-gardener-extension-backup-s3
+/gardener-extension-backup-s3
