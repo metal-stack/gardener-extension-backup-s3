@@ -129,7 +129,7 @@ func NewControllerManagerCommand(ctx context.Context) *cobra.Command {
 			backupEntryCtrlOpts.Completed().Apply(&s3backupentry.DefaultAddOptions.Controller)
 			heartbeatCtrlOpts.Completed().Apply(&heartbeat.DefaultAddOptions)
 			reconcileOpts.Completed().Apply(&s3backupbucket.DefaultAddOptions.IgnoreOperationAnnotation, &s3backupbucket.DefaultAddOptions.ExtensionClass)
-			reconcileOpts.Completed().Apply(&s3backupentry.DefaultAddOptions.IgnoreOperationAnnotation, &s3backupbucket.DefaultAddOptions.ExtensionClass)
+			reconcileOpts.Completed().Apply(&s3backupentry.DefaultAddOptions.IgnoreOperationAnnotation, &s3backupentry.DefaultAddOptions.ExtensionClass)
 
 			if err := controllerSwitches.Completed().AddToManager(ctx, mgr); err != nil {
 				return fmt.Errorf("could not add controllers to manager: %w", err)
