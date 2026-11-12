@@ -9,32 +9,21 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# setup virtual GOPATH
-source "$GARDENER_HACK_DIR"/vgopath-setup.sh
+# The code generators are pinned in the go.mod of the dedicated gardener tools module,
+# hence it must be used to resolve the k8s.io/code-generator dependency.
+GARDENER_HACK_TOOLS_DIR="$(GOWORK=off go list -m -f '{{.Dir}}' github.com/gardener/gardener/hack/tools)"
+GARDENER_HACK_TOOLS_MODFILE="${GARDENER_HACK_TOOLS_DIR}/go.mod"
+# k8s.io/code-generator is not part of this module's build, so it might not be present in the module
+# cache yet. Download it upfront, otherwise 'go list -m' cannot report its directory.
+GOWORK=off go mod download -modfile "${GARDENER_HACK_TOOLS_MODFILE}" k8s.io/code-generator
+CODE_GEN_DIR="$(GOWORK=off go list -modfile "${GARDENER_HACK_TOOLS_MODFILE}" -m -f '{{.Dir}}' k8s.io/code-generator)"
+source "${CODE_GEN_DIR}/kube_codegen.sh"
 
-CODE_GEN_DIR=$(go list -m -f '{{.Dir}}' k8s.io/code-generator)
+rm -f "$(go env GOPATH)"/bin/*-gen
 
-# We need to explicitly pass GO111MODULE=off to k8s.io/code-generator as it is significantly slower otherwise,
-# see https://github.com/kubernetes/code-generator/issues/100.
-export GO111MODULE=off
+CURRENT_DIR=$(dirname "$0")
+PROJECT_ROOT="${CURRENT_DIR}"/..
 
-rm -f $GOPATH/bin/*-gen
-
-PROJECT_ROOT=$(dirname $0)/..
-
-bash "${CODE_GEN_DIR}/generate-internal-groups.sh" \
-  deepcopy,defaulter \
-  github.com/metal-stack/gardener-extension-backup-s3/pkg/client/componentconfig \
-  github.com/metal-stack/gardener-extension-backup-s3/pkg/apis \
-  github.com/metal-stack/gardener-extension-backup-s3/pkg/apis \
-  "config:v1alpha1" \
-  --go-header-file "${GARDENER_HACK_DIR}/LICENSE_BOILERPLATE.txt"
-
-bash "${CODE_GEN_DIR}/generate-internal-groups.sh" \
-  conversion \
-  github.com/metal-stack/gardener-extension-backup-s3/pkg/client/componentconfig \
-  github.com/metal-stack/gardener-extension-backup-s3/pkg/apis \
-  github.com/metal-stack/gardener-extension-backup-s3/pkg/apis \
-  "config:v1alpha1" \
-  --extra-peer-dirs=github.com/metal-stack/gardener-extension-backup-s3/pkg/apis/config,github.com/metal-stack/gardener-extension-backup-s3/pkg/apis/config/v1alpha1,k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/apimachinery/pkg/conversion,k8s.io/apimachinery/pkg/runtime \
-  --go-header-file "${GARDENER_HACK_DIR}/LICENSE_BOILERPLATE.txt"
+kube::codegen::gen_helpers \
+  --boilerplate "${PROJECT_ROOT}/hack/boilerplate.txt" \
+  "${PROJECT_ROOT}/pkg/apis/config"

@@ -1,4 +1,4 @@
-FROM golang:1.26 AS builder
+FROM golang:1.27 AS builder
 
 WORKDIR /go/src/github.com/metal-stack/gardener-extension-backup-s3
 
@@ -11,7 +11,7 @@ COPY . .
 
 RUN make install
 
-FROM gcr.io/distroless/static-debian12:nonroot
+FROM gcr.io/distroless/static-debian13:nonroot
 
 WORKDIR /
 

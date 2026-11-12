@@ -15,8 +15,8 @@ LD_FLAGS                    := "-w -X github.com/metal-stack/gardener-extension-
 LEADER_ELECTION             := false
 IGNORE_OPERATION_ANNOTATION := false
 WEBHOOK_CONFIG_URL          := localhost
-GO_VERSION                  := 1.26
-GOLANGCI_LINT_VERSION       := v2.12.2
+GO_VERSION                  := 1.27
+GOLANGCI_LINT_VERSION       := v2.15.0
 
 ifeq ($(CI),true)
   DOCKER_TTY_ARG=""
@@ -77,8 +77,9 @@ check: $(GOIMPORTS) $(GOLANGCI_LINT) $(HELM)
 	@REPO_ROOT=$(REPO_ROOT) bash $(GARDENER_HACK_DIR)/check-charts.sh ./charts
 
 .PHONY: generate
-generate: $(VGOPATH) $(HELM) $(YQ)
-	@REPO_ROOT=$(REPO_ROOT) VGOPATH=$(VGOPATH) GARDENER_HACK_DIR=$(GARDENER_HACK_DIR) bash $(GARDENER_HACK_DIR)/generate-sequential.sh ./charts/... ./cmd/... ./pkg/...
+generate: $(CONTROLLER_GEN) $(EXTENSION_GEN) $(GEN_CRD_API_REFERENCE_DOCS) $(HELM) $(KUSTOMIZE) $(MOCKGEN) $(YQ)
+	echo $(shell git -c safe.directory=/go/src/github.com/metal-stack/gardener-extension-backup-s3 describe --abbrev=0 --tags) > VERSION
+	@REPO_ROOT=$(REPO_ROOT) GARDENER_HACK_DIR=$(GARDENER_HACK_DIR) bash $(GARDENER_HACK_DIR)/generate-sequential.sh ./charts/... ./cmd/... ./pkg/...
 
 .PHONY: generate-in-container
 generate-in-container: tidy $(HELM)
