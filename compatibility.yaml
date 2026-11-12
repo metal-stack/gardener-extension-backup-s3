@@ -1,0 +1,7 @@
+requires: {}
+supportedFeatures: []
+testedWith:
+  gardener/gardener: v1.148.5
+  kubernetesVersions:
+  - 1.36
+  - 1.32

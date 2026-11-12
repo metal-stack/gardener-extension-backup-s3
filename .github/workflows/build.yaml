@@ -29,3 +29,33 @@ jobs:
     with:
       chart-path: charts/${{ github.event.repository.name }}
       container-image-values-patch: image.tag
+
+  extension-hub:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs:
+      - go-build
+      - extension-helm-chart
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Make tags
+        id: tags
+        uses: metal-stack/actions-common/.github/actions/push-tags@v1
+
+      - name: Registry login
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build hub artifacts
+        uses: matthias-horne/extension-hub/.github/actions/compatibility@main
+        with:
+          extension-ref: ghcr.io/${{ github.repository_owner }}/extensions/${{ github.event.repository.name }}:${{ needs.go-build.outputs.push-tag }}
+          chart-ref: ${{ needs.extension-helm-chart.outputs.push-image }}:${{ needs.extension-helm-chart.outputs.push-tag }}
+          image-ref: ${{ needs.go-build.outputs.push-image }}:${{ needs.go-build.outputs.push-tag }}

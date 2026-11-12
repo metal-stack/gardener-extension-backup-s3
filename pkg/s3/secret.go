@@ -12,7 +12,6 @@ import (
 
 	extensionscontroller "github.com/gardener/gardener/extensions/pkg/controller"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	s3client "github.com/metal-stack/gardener-extension-backup-s3/pkg/s3/client"
@@ -82,7 +81,7 @@ func readCredentialsSecret(secret *corev1.Secret) (*s3client.Credentials, error)
 
 func getSecretStringValue(secret *corev1.Secret, key string, required bool) (*string, error) {
 	if value, ok := secret.Data[key]; ok {
-		return ptr.To(string(value)), nil
+		return new(string(value)), nil
 	}
 	if required {
 		return nil, fmt.Errorf("missing %q field in secret", key)

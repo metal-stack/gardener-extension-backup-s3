@@ -46,8 +46,8 @@ func NewClient(cred *Credentials) (*Client, error) {
 		Config: aws.Config{
 			Credentials:      credentials.NewStaticCredentials(cred.AccessKeyID, cred.SecretAccessKey, ""),
 			Endpoint:         cred.Endpoint,
-			Region:           aws.String(cred.Region),
-			S3ForcePathStyle: aws.Bool(cred.S3ForcePathStyle),
+			Region:           new(cred.Region),
+			S3ForcePathStyle: new(cred.S3ForcePathStyle),
 			HTTPClient:       httpClient,
 		},
 	})
@@ -64,8 +64,8 @@ func NewClient(cred *Credentials) (*Client, error) {
 // no error is returned.
 func (c *Client) DeleteObjectsWithPrefix(ctx context.Context, bucket, prefix string) error {
 	in := &s3.ListObjectsInput{
-		Bucket: aws.String(bucket),
-		Prefix: aws.String(prefix),
+		Bucket: new(bucket),
+		Prefix: new(prefix),
 	}
 
 	var delErr error
@@ -80,10 +80,10 @@ func (c *Client) DeleteObjectsWithPrefix(ctx context.Context, bucket, prefix str
 
 		if len(objectIDs) != 0 {
 			if _, delErr = c.s3.DeleteObjectsWithContext(ctx, &s3.DeleteObjectsInput{
-				Bucket: aws.String(bucket),
+				Bucket: new(bucket),
 				Delete: &s3.Delete{
 					Objects: objectIDs,
-					Quiet:   aws.Bool(true),
+					Quiet:   new(true),
 				},
 			}); delErr != nil {
 				return false
@@ -124,10 +124,10 @@ func (c *Client) CreateBucketIfNotExists(ctx context.Context, bucket, region str
 	}
 
 	createBucketInput := &s3.CreateBucketInput{
-		Bucket: aws.String(bucket),
+		Bucket: new(bucket),
 		ACL:    aws.String(s3.BucketCannedACLPrivate),
 		CreateBucketConfiguration: &s3.CreateBucketConfiguration{
-			LocationConstraint: aws.String(region),
+			LocationConstraint: new(region),
 		},
 	}
 
@@ -145,7 +145,7 @@ func (c *Client) CreateBucketIfNotExists(ctx context.Context, bucket, region str
 // DeleteBucketIfExists deletes the s3 bucket with name <bucket>. If it does not exist,
 // no error is returned.
 func (c *Client) DeleteBucketIfExists(ctx context.Context, bucket string) error {
-	if _, err := c.s3.DeleteBucketWithContext(ctx, &s3.DeleteBucketInput{Bucket: aws.String(bucket)}); err != nil {
+	if _, err := c.s3.DeleteBucketWithContext(ctx, &s3.DeleteBucketInput{Bucket: new(bucket)}); err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			if aerr.Code() == s3.ErrCodeNoSuchBucket {
 				return nil

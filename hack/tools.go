@@ -10,9 +10,5 @@
 package tools
 
 import (
-	_ "github.com/gardener/gardener/hack"
-	_ "github.com/gardener/gardener/hack/.ci"
-
-	_ "golang.org/x/tools/cmd/goimports"
-	_ "k8s.io/code-generator"
+	_ "github.com/gardener/gardener/hack/tools"
 )
