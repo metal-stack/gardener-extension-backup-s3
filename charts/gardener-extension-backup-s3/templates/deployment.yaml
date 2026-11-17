@@ -58,7 +58,7 @@ spec:
         - --ignore-operation-annotation={{ .Values.controllers.ignoreOperationAnnotation }}
         {{- if (include "runtimeCluster.enabled" .) }}
         - --controllers=backupbucket,backupentry
-        - --extension-class=garden
+        - --extension-classes=garden
         {{- else }}
         - --disable-controllers={{ .Values.disableControllers | join "," }}
         {{- end }}
